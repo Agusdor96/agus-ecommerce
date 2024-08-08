@@ -6,15 +6,22 @@ import { pagination } from '../helpers/pagination.helper';
 import { Order } from '../orders/OrderEntity/orders.entity';
 import { ProductsService } from '../products/products.service';
 import { OrderDetail } from '../orderDetail/OrderDetailEntity/orderDetail.entity';
+import { PassDto } from './UserDtos/role.dto';
+import { ConfigService } from '@nestjs/config';
 
 
 @Injectable()
 export class UserService {
+    private readonly rolePass:string
+  
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Order)private orderRepository: Repository<Order>,
     @InjectRepository(OrderDetail) private orderDetailRepository: Repository<OrderDetail>,
-    private productService: ProductsService) {}
+    private productService: ProductsService,
+    private readonly configService: ConfigService) {
+      this.rolePass = this.configService.get<string>('ADMIN_PASS');
+    }
 
   
   async  getUserEmail(email:string):Promise<User> {
@@ -40,6 +47,22 @@ export class UserService {
     }
     return newUser
   }
+
+ async updateRole(id: string, adminPass:PassDto) {
+    const user = await this.userRepository.findOneBy({id})
+    if(!user){
+      throw new NotFoundException("User not found")
+    }
+    user.isAdmin = true
+
+    if(adminPass.password !== this.rolePass){
+      throw new BadRequestException("paassword not valid")
+    }
+    
+    await this.userRepository.update(id, user)
+    return ("okei")
+    
+}
   
   async getUserById(id: string): Promise<Partial<User>> {
     const userId = await this.userRepository.findOne({
@@ -73,7 +96,7 @@ export class UserService {
       throw new NotFoundException("Id does not belong to an existing user")
     }
 
-    const userOrder:Order = await this.orderRepository.findOne({
+    const userOrder = await this.orderRepository.findOne({
       where: {
         user:{id:id},
       },
@@ -82,21 +105,27 @@ export class UserService {
       }
     })
     
-    const orderDetail:Partial<OrderDetail> = userOrder.orderDetail
-   
-    const detailWithProd:OrderDetail = await this.orderDetailRepository.findOne({
-      where:{
-        id:orderDetail.id},
-      relations: ["products"]
-    })
-  const prodId:string[] = detailWithProd.products.map((prod)=>prod.id)
+    if(userOrder && userOrder.orderDetail){
 
-  const deletedUser:User = await this.userRepository.remove(user);
-    
-    if(deletedUser){
-      await this.orderDetailRepository.remove(detailWithProd)
-      await this.productService.stockUpdate(prodId)
-      return { message: `User deleted succesfully` };
+      const detailWithProd:OrderDetail = await this.orderDetailRepository.findOne({
+        where:{
+          id:userOrder.orderDetail.id},
+          relations: ["products"]
+      })
+      
+      if(detailWithProd){
+        const prodId:string[] = detailWithProd.products.map((prod)=>prod.id)
+        
+        await this.userRepository.remove(user);
+
+        await this.orderDetailRepository.remove(detailWithProd)
+        await this.productService.stockUpdate(prodId)
+        return { message: `User deleted succesfully` };
+      }
+    } else {
+      await this.userRepository.remove(user);
+      return { message: `User deleted successfully` };
+
     }
   }
 }

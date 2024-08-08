@@ -28,7 +28,6 @@ import { Category } from './categories/CategoryEntity/categories.entity';
       signOptions: {expiresIn: "1h"},
       secret: process.env.JWT_SECRET,
     }),
-    TypeOrmModule.forFeature([Category]),
     UserModule,
     ProductsModule,
     AuthModule,

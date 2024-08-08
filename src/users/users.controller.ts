@@ -7,7 +7,8 @@ import { Rolesenum } from "../auth/roles.enum";
 import { RolesGuard } from "../guards/roles.guard";
 import { Roles} from "../decorators/roles.decorator";
 import { updateUserDto } from "./UserDtos/updateUser.dto"; 
-import { OneUserInterceptor, PasswordInterceptor } from "./Interceptors/users.interceptors";
+import { IdUserInterceptor, PasswordInterceptor } from "./Interceptors/users.interceptors";
+import { PassDto } from "./UserDtos/role.dto";
 
 @ApiTags("Users")
 @Controller("users")
@@ -15,19 +16,28 @@ export class UsersController {
     constructor(private readonly userService: UserService) {}
     @ApiBearerAuth()
     @Get()
-    @UseInterceptors(PasswordInterceptor)
     @SwaggerGetUsers()
     @Roles(Rolesenum.Admin)
     @UseGuards(AuthGuard, RolesGuard)
+    @UseInterceptors(PasswordInterceptor)
         getUsers(
             @Query('limit') limit?: number,
             @Query('page') page?: number){
             return this.userService.getUsers(Number(page), Number(limit));
         }
+
+        
+    @Put("/role/:id")
+        updateRole(
+            @Param("id", ParseUUIDPipe)id:string,
+            @Body()adminPass:PassDto){
+        return this.userService.updateRole(id, adminPass)
+        }
+
         
     @ApiBearerAuth()
     @Get(":id")
-    @UseInterceptors(OneUserInterceptor)
+    @UseInterceptors(PasswordInterceptor)
     @SwaggerGetUserById()
     @UseGuards(AuthGuard)
         getUserById(@Param("id", ParseUUIDPipe) id:string){   
@@ -36,9 +46,9 @@ export class UsersController {
 
     @ApiBearerAuth()
     @Put(":id")
-    @UseInterceptors(OneUserInterceptor)
     @SwaggerUpdateUser()
     @UseGuards(AuthGuard)
+    @UseInterceptors(PasswordInterceptor, IdUserInterceptor)
         updateUser(
             @Param("id", ParseUUIDPipe)id:string, 
             @Body()modifiedUser:updateUserDto){
@@ -48,6 +58,7 @@ export class UsersController {
     @Delete(":id")
     @SwaggerDeleteUser()
     @UseGuards(AuthGuard)
+    @UseInterceptors(IdUserInterceptor)
         deleteUser(@Param("id", ParseUUIDPipe)id:string){
             return this.userService.deleteUser(id);
         }

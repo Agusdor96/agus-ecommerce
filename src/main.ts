@@ -29,6 +29,7 @@ async function bootstrap() {
 
   const categoryService = app.get(CategoryService)
   await categoryService.preloadCategory()
+  
   const productsService = app.get(ProductsService)
   await productsService.preLoadProd()
   
