@@ -27,4 +27,4 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/ecommerce51:latest
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/ecommerce51Deploy:latest
