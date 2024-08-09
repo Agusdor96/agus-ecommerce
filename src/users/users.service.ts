@@ -21,6 +21,7 @@ export class UserService {
     private productService: ProductsService,
     private readonly configService: ConfigService) {
       this.rolePass = this.configService.get<string>('ADMIN_PASS');
+      console.log('ADMIN_PASS:', this.configService.get<string>('ADMIN_PASS'));
     }
 
   
@@ -29,10 +30,9 @@ export class UserService {
       if(!user){
         throw new NotFoundException("User not found")
       }
-      console.log("1",user.isAdmin);
+      
       user.isAdmin = true
-      console.log(user);
-      console.log(user.isAdmin);
+      
       console.log(this.rolePass);
       
       if(adminPass.password !== this.rolePass){

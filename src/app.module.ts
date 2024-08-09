@@ -9,7 +9,7 @@ import { OrderModule } from './orders/orders.module';
 import { ProductsModule } from './products/products.module';
 import { CategoryModule } from './categories/category.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
-import { Category } from './categories/CategoryEntity/categories.entity';
+
 
 @Module({
   imports: [
