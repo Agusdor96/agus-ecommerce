@@ -12,7 +12,8 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
-    private readonly rolePass:string
+  private readonly rolePass: string = process.env.ADMIN_PASS;
+  
   
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
