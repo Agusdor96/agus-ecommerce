@@ -19,11 +19,7 @@ export class UserService {
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Order)private orderRepository: Repository<Order>,
     @InjectRepository(OrderDetail) private orderDetailRepository: Repository<OrderDetail>,
-    private productService: ProductsService,
-    private readonly configService: ConfigService) {
-      this.rolePass = this.configService.get<string>('ADMIN_PASS');
-      console.log('ADMIN_PASS:', this.configService.get<string>('ADMIN_PASS'));
-    }
+    private productService: ProductsService) {}
 
   
   async updateRole(id: string, adminPass:PassDto) {
