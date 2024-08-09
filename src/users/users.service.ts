@@ -24,6 +24,25 @@ export class UserService {
     }
 
   
+  async updateRole(id: string, adminPass:PassDto) {
+      const user = await this.userRepository.findOneBy({id})
+      if(!user){
+        throw new NotFoundException("User not found")
+      }
+      user.isAdmin = true
+      console.log(user);
+      
+      console.log(this.rolePass);
+      console.log(user.isAdmin);
+      
+      if(adminPass.password !== this.rolePass){
+        throw new BadRequestException("password not valid")
+      }
+      
+      await this.userRepository.update(id, user)
+      return (`${user.name} has the ADMIN role now`)
+      
+  }
   async  getUserEmail(email:string):Promise<User> {
     const userByMail = await this.userRepository.findOne({where: { email }});
     return userByMail
@@ -47,23 +66,6 @@ export class UserService {
     }
     return newUser
   }
-
- async updateRole(id: string, adminPass:PassDto) {
-    const user = await this.userRepository.findOneBy({id})
-    if(!user){
-      throw new NotFoundException("User not found")
-    }
-    user.isAdmin = true
-console.log(this.rolePass);
-
-    if(adminPass.password !== this.rolePass){
-      throw new BadRequestException("paassword not valid")
-    }
-    
-    await this.userRepository.update(id, user)
-    return ("okei")
-    
-}
   
   async getUserById(id: string): Promise<Partial<User>> {
     const userId = await this.userRepository.findOne({

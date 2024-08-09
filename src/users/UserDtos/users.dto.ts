@@ -37,7 +37,9 @@ address:string;
 
 @ApiProperty({ description: 'User phone', example: 1124875487 })
 @IsNotEmpty()
-@IsNumber()
+@Matches(/^\+?[1-9]\d{1,14}$/, {
+    message: 'Phone number must be a valid international format'
+  })
 phone: string;
 
 @ApiProperty({ description: 'The country where the user lives', example: 'Argentina' })
