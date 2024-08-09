@@ -54,6 +54,7 @@ export class UserService {
       throw new NotFoundException("User not found")
     }
     user.isAdmin = true
+console.log(this.rolePass);
 
     if(adminPass.password !== this.rolePass){
       throw new BadRequestException("paassword not valid")
