@@ -29,11 +29,11 @@ export class UserService {
       if(!user){
         throw new NotFoundException("User not found")
       }
+      console.log("1",user.isAdmin);
       user.isAdmin = true
       console.log(user);
-      
-      console.log(this.rolePass);
       console.log(user.isAdmin);
+      console.log(this.rolePass);
       
       if(adminPass.password !== this.rolePass){
         throw new BadRequestException("password not valid")
