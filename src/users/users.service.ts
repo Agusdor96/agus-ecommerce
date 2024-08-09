@@ -12,7 +12,7 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
-  private readonly rolePass: string = process.env.ADMIN_PASS;
+
   
   
   constructor(
@@ -30,9 +30,9 @@ export class UserService {
       
       user.isAdmin = true
       
-      console.log(this.rolePass);
+
       
-      if(adminPass.password !== this.rolePass){
+      if(adminPass.password !== "Hola1234?"){
         throw new BadRequestException("password not valid")
       }
       
