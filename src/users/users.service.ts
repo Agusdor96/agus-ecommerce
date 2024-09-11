@@ -12,28 +12,27 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
-
+  private readonly rolePass:string
   
   
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Order)private orderRepository: Repository<Order>,
     @InjectRepository(OrderDetail) private orderDetailRepository: Repository<OrderDetail>,
-    private productService: ProductsService) {}
+    private productService: ProductsService,
+    private readonly configService: ConfigService) {
+      this.rolePass = this.configService.get<string>('ADMIN_PASS');
+    }
 
   
-  async updateRole(id: string, adminPass:PassDto) {
+    async updateRole(id: string, adminPass:PassDto) {
       const user = await this.userRepository.findOneBy({id})
       if(!user){
         throw new NotFoundException("User not found")
       }
-      
       user.isAdmin = true
-      
-
-      
-      if(adminPass.password !== "Hola1234?"){
-        throw new BadRequestException("password not valid")
+      if(adminPass.password !== this.rolePass){
+        throw new BadRequestException("paassword not valid")
       }
       
       await this.userRepository.update(id, user)
