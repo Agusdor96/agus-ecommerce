@@ -33,7 +33,7 @@ async function bootstrap() {
   const productsService = app.get(ProductsService)
   await productsService.preLoadProd()
   
-  await app.listen(3000);
+  await app.listen(Number(process.env.SERVER_PORT));
 }
 
 bootstrap();
